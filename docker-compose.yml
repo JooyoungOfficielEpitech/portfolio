@@ -14,6 +14,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://newspulse_user:bV0_cCo-@postgres:5432/newspulse_db
       - REDIS_URL=redis://redis:6379/0
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -25,6 +27,8 @@ services:
       - /app/node_modules
     environment:
       - VITE_API_URL=http://backend:8000
+    networks:
+      - app-network
 
   redis:
     image: redis:alpine
@@ -34,7 +38,12 @@ services:
     volumes:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes", "--bind", "0.0.0.0"]
+    networks:
+      - app-network
 
 volumes:
   redis_data:
 
+networks:
+  app-network:
+    driver: bridge
