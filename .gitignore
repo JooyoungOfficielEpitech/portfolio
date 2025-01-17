@@ -1,0 +1,71 @@
+# Node.js / Vite 관련
+node_modules/
+dist/
+.vite/
+
+# 환경 변수 파일
+.env
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS 관련
+.DS_Store
+
+# FastAPI 관련
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
+instance/
+
+# Virtual environments
+.env/
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# pytest 관련
+.cache/
+.pytest_cache/
+
+# MyPy 및 Type Checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Docker 관련
+docker-compose.override.yml
+*.swp
+.dockerignore
+
+# PostgreSQL 및 Redis 데이터
+*.pid
+*.sock
+*.log
+*.rdb
+dump.rdb
+appendonly.aof
+pgdata/
+
+# VS Code 및 IDE 설정
+.vscode/
+.idea/
+*.iml
+
+# OS 및 편집기 임시 파일
+*.swp
+*~
+*.swo
+*.bak
+*.tmp
+
+# Git 관련
+.git/

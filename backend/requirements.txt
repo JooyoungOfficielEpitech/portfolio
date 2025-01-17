@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+redis
+openai
+python-dotenv
+pypdf
+langchain-community
+langchain_openai
+faiss-cpu
+langchain_teddynote
