@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import './App.css';
 
 interface Message {
   content: string;
   type: 'user' | 'bot';
   timestamp: Date;
+  isLoading?: boolean;
 }
 
 interface QuickButton {
@@ -20,8 +22,7 @@ const quickButtons: QuickButton[] = [
   { label: '기술 스택', query: '보유하고 계신 기술 스택을 알려주세요.' },
   { label: '프로젝트 경험', query: '주요 프로젝트 경험에 대해 설명해주세요.' },
   { label: '학력', query: '학력 사항을 알려주세요.' },
-  { label: '경력', query: '경력 사항을 알려주세요.' },
-  { label: '자격증', query: '보유하신 자격증을 알려주세요.' }
+  { label: '경력', query: '경력 사항을 알려주세요.' }
 ];
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -29,7 +30,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 function App() {
   const [messages, setMessages] = useState<Message[]>([
     {
-      content: "안녕하세요! 저는 당신의 이력서를 소개해드릴 챗봇입니다. 어떤 것이 궁금하신가요?",
+      content: "안녕하세요! 저는 개발자 김주영.bot 입니다. 저의 이력에 대해 궁금하신 점을 물어봐주세요.",
       type: 'bot',
       timestamp: new Date()
     }
@@ -41,7 +42,7 @@ function App() {
     return savedInfo ? JSON.parse(savedInfo) : null;
   });
   const [showUserModal, setShowUserModal] = useState(!userInfo);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const organizationInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,7 +57,7 @@ function App() {
   const handleUserSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const organization = organizationInputRef.current?.value.trim();
-    
+
     if (!organization) {
       alert('소속을 입력해주세요.');
       return;
@@ -88,6 +89,16 @@ function App() {
     setInputText('');
 
     try {
+      setMessages((prev) => [
+        ...prev,
+        {
+          content: "답변을 생성하고 있습니다.",
+          type: 'bot',
+          timestamp: new Date(),
+          isLoading: true
+        }
+      ]);
+
       const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: {
@@ -108,8 +119,9 @@ function App() {
       const decoder = new TextDecoder('utf-8');
 
       let botMessage = '';
+
       setMessages((prev) => [
-        ...prev,
+        ...prev.slice(0, -1),
         {
           content: botMessage,
           type: 'bot',
@@ -135,7 +147,7 @@ function App() {
     } catch (error) {
       console.error('Error:', error);
       setMessages((prev) => [
-        ...prev,
+        ...prev.slice(0, -1),
         {
           content: '죄송합니다. 서버와 연결할 수 없습니다.',
           type: 'bot',
@@ -197,11 +209,13 @@ function App() {
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`message ${
-              message.type === 'user' ? 'user-message' : 'bot-message'
-            }`}
+            className={`message ${message.type === 'user' ? 'user-message' : 'bot-message'} 
+              ${message.isLoading ? 'loading-message' : ''}`}
           >
-            <div className="message-content">{message.content}</div>
+            <div className="message-content">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+            {message.isLoading && <div className="loading-spinner" />}
             <div className="message-timestamp">
               {message.timestamp.toLocaleTimeString([], {
                 hour: '2-digit',
@@ -235,8 +249,8 @@ function App() {
           rows={1}
           disabled={isLoading || !userInfo}
         />
-        <button 
-          onClick={() => handleSend()} 
+        <button
+          onClick={() => handleSend()}
           disabled={!inputText.trim() || isLoading || !userInfo}
         >
           전송
